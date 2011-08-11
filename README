@@ -1,0 +1,17 @@
+Copyright (C) Juan Miguel Cejuela <juanmi@jmcejuela.com>
+
+--------------------------------------------------------------------------------
+jmc.cl.utils: Juan Miguel Cejuela's utilities for Common Lisp
+--------------------------------------------------------------------------------
+
+Compatibility: ANSI Common Lisp. Any SO
+Originally Created:    Wed Jul  9 18:18:18 2008 (CEST)
+Last Effective Update: Mon Sep 22 13:03:46 2008 (CEST)
+
+
+
+DISCLAIMER
+
+Highly experimental.
+Used as support for other own's programs.
+Do not depend directly on this system.

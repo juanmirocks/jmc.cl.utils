@@ -34,7 +34,7 @@
         (> (length x) (length y)))))
 
 (defmacro make-list-meval (size initial-element)
-  "Exactly like make-list but the initial-element must be given and will be evaluated for every position"
+  "Exactly like make-list but the initial-element must be given and this will be evaluated for every position"
   (let ((gsize (gensym)) (glist (gensym)) (gi (gensym)))
     `(do ((,gsize ,size)
           (,glist nil)
@@ -70,4 +70,3 @@
 (defun sequence->list (sequence)
   "Convert the sequence into a list"
   (concatenate 'list sequence))
-

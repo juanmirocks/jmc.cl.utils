@@ -39,6 +39,7 @@
    :matrix->list
    :list->sequence
    :sequence->list
+   :range
 
    ;;;arrays
    :make-typed-array

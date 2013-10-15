@@ -51,7 +51,9 @@
    :matrix=
    :vector-from-matrix
    :!normalize-vector
-   :!normalize-matrix
+   :!normalize-2dmatrix-by-row
+   :!normalize-3dmatrix-by-row
+   :!normalize-array
    :accum-array
    :copy-matrix
 
@@ -69,4 +71,3 @@
    :date
    :lisparray->pythonarray
    :make-hash-table-with-list))
-

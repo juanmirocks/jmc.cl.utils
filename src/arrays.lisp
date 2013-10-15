@@ -213,6 +213,35 @@
             (setf (apply #'aref (cons array ref)) ;TODO somehow create setf function for arefle
                   (/ (apply #'aref (cons array ref)) zustandssumme)))))))
 
+
+(defmacro accum-array (array no-dimensions element-type)
+  "Give the accumulative float array of any dimension"
+  (macrolet ((bucle (i &body body)
+               ``(dotimes (,(car (push (gensym) indexes)) (nth ,,i ,dims))
+                   ,,@body ,(deep-array (the fixnum (incf i)) (the fixnum (decf n)) indexes
+                                        a-in dims element-type a-out accu))))
+    (labels ((deep-array (i n indexes a-in dims element-type a-out accu)
+               (cond
+                 ((zerop n) (let ((r (reverse indexes)))
+                              `(progn  (the ,element-type (incf ,accu (aref ,a-in ,@r)))
+                                       (setf (aref ,a-out ,@r) ,accu))))
+                 ((= 2 n) (bucle i `(setf ,accu (coerce 0 ',element-type))))
+                 (t (bucle i)))))
+
+      (with-gensyms (dims a-in a-out accu)
+        (let ((gn no-dimensions))
+          `(let* ((,a-in ,array)
+                  (,dims (array-dimensions ,a-in))
+                  (,a-out (make-array ,dims
+                                      :element-type ',element-type
+                                      :initial-element (coerce 0 ',element-type)
+                                      :adjustable (adjustable-array-p ,a-in)))
+                  (,accu (coerce 0 ',element-type)))
+             (declare (optimize (speed 3) (safety 0)) ((simple-array ,element-type) ,a-in ,a-out) (,element-type ,accu))
+             ,(deep-array 0 gn nil a-in dims element-type a-out accu)
+             ,a-out))))))
+
+
 (defun copy-matrix (matrix)
   "Copy a matrix"
   (let* ((dims (array-dimensions matrix)) (dimx (car dims)) (dimy (cadr dims))

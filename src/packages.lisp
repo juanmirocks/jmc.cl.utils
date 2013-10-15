@@ -57,6 +57,7 @@
    :!normalize-array
    :accum-array
    :copy-matrix
+   :copy-array
 
    ;;;strings
    :string-to-number

@@ -160,7 +160,7 @@
       (setf (aref out i) (aref matrix nthrow i)))))
 
 (defun !normalize-vector (vector)
-  "DEPRECATED **Destructive** -- Normalize the values of a float vector."
+  "DEPRECATED, use !normalize-array -- **Destructive** -- Normalize the values of a float vector."
   (let ((cero (coerce 0 (array-element-type vector)))
         (factor (reduce #'+ vector))
         (len (length vector)))
@@ -170,8 +170,8 @@
                 cero
                 (/ (aref vector i) factor))))))
 
-(defun !normalize-matrix (matrix)
-  "DEPRECATED **Destructive** -- Normalize the values of a float matrix. "
+(defun !normalize-2dmatrix-by-row (matrix)
+  "**Destructive** -- Normalize the values of a float matrix. "
   (destructuring-bind (f s) (array-dimensions matrix)
     (let* ((cero (coerce 0 (array-element-type matrix))) (factor cero))
       (declare (real factor))
@@ -185,15 +185,33 @@
                        cero
                        (/ (aref matrix i j) factor))))))))
 
-(defun !prob-normalize (array)
-  (let ((zustandsumme (areduce #'+ array))
+(defun !normalize-3dmatrix-by-row (matrix)
+  "**Destructive** -- Normalize the values of a float 3d matrix by row."
+  (destructuring-bind (s1 s2 s3) (array-dimensions matrix)
+    (let* ((zero (coerce 0 (array-element-type matrix)))
+           (zustandssumme zero))
+      (declare (real zustandssumme))
+      (dotimes (i s1 matrix)
+        (setf zustandssumme zero)
+        (dotimes (j s2)
+          (dotimes (z s3)
+            (incf zustandssumme (aref matrix i j z))))
+        (dotimes (j s2)
+          (dotimes (z s3)
+            (setf (aref matrix i j z)
+                  (if (zerop zustandssumme)
+                      zero
+                      (/ (aref matrix i j z) zustandssumme)))))))))
+
+(defun !normalize-array (array)
+  (let ((zustandssumme (areduce #'+ array))
         (powers (array-powers array)))
-    (if (zerop zustandsumme)
+    (if (zerop zustandssumme)
         (make-array (array-dimensions array) :element-type (array-element-type array) :initial-element 0)
         (dotimes (i (array-total-size array) array)
           (let ((ref (refa i powers)))
             (setf (apply #'aref (cons array ref)) ;TODO somehow create setf function for arefle
-                  (/ (apply #'aref (cons array ref)) zustandsumme)))))))
+                  (/ (apply #'aref (cons array ref)) zustandssumme)))))))
 
 (defun copy-matrix (matrix)
   "Copy a matrix"

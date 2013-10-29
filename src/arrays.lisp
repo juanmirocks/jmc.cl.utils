@@ -90,15 +90,16 @@ Generates a numerical matrix of type element-type with random values. The range 
 @param alpha: float in [0, 1]
 
 Note: the parameters are not checked"
-  (if (= 1 alpha)
-      a1
-      (let* ((type (array-element-type a1))
-             (alpha (coerce alpha type))
-             (1-alpha (coerce (- 1 alpha) type)))
-        (dotimes (i (array-total-size a1) a1)
-      (setf (arefa a1 i) (if (and let-zero-be-zero (zerop (arefa a1 i)))
-                             (arefa a1 i)
-                             (+ (* (arefa a1 i) alpha) (* (arefa a2 i) 1-alpha))))))))
+  (cond
+    ((= 1 alpha) a1)
+    ((zerop alpha) a2)
+    (t (let* ((type (array-element-type a1))
+              (alpha (coerce alpha type))
+              (1-alpha (coerce (- 1 alpha) type)))
+         (dotimes (i (array-total-size a1) a1)
+           (setf (arefa a1 i) (if (and let-zero-be-zero (zerop (arefa a1 i)))
+                                  (arefa a1 i)
+                                  (+ (* (arefa a1 i) alpha) (* (arefa a2 i) 1-alpha)))))))))
 
 (defun !combine-float-vectors (vec1 vec2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
   "Combine 2 float vectors whose values range from 0 to 1. Alpha is the level of confidence in vec1, ie, the element of a resultant value will be value = vec1_value * alpha + vec2_value * (- 1 alpha). Destructive function **"

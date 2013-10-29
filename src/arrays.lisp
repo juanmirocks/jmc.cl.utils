@@ -7,12 +7,12 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defmacro arefl (array is)
-  "Access array by a list of indeces"
-  `(apply #'aref (cons ,array ,is)))
+(defun arefl (array &rest args)
+   "Access array by a list of indices"
+  (apply 'aref array (reduce 'cons args :from-end t)))
 
-(defun (setf arefl) (value array is)
-  (setf (arefl array is) value)) ;TODO somehow create setf function for arefl
+;; (defun (setf arefl) (new-value array &rest args)
+;;   (setf (apply #'aref array (reduce 'cons args :from-end t)) new-value))
 
 (defun array-powers (x)
   (let ((dim (if (listp x) x (array-dimensions x))))

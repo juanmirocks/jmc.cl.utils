@@ -90,16 +90,15 @@ Generates a numerical matrix of type element-type with random values. The range 
 @param alpha: float in [0, 1]
 
 Note: the parameters are not checked"
-  (cond
-    ((= 1 alpha) a1)
-    ((zerop alpha) a2)
-    (t (let* ((type (array-element-type a1))
-              (alpha (coerce alpha type))
-              (1-alpha (coerce (- 1 alpha) type)))
-         (dotimes (i (array-total-size a1) a1)
-           (setf (arefa a1 i) (if (and let-zero-be-zero (zerop (arefa a1 i)))
-                                  (arefa a1 i)
-                                  (+ (* (arefa a1 i) alpha) (* (arefa a2 i) 1-alpha)))))))))
+  (if (= 1 alpha)
+      a1
+      (let* ((type (array-element-type a1))
+             (alpha (coerce alpha type))
+             (1-alpha (coerce (- 1 alpha) type)))
+        (dotimes (i (array-total-size a1) a1)
+          (setf (arefa a1 i) (if (and let-zero-be-zero (zerop (arefa a1 i)))
+                                 (arefa a1 i)
+                                 (+ (* (arefa a1 i) alpha) (* (arefa a2 i) 1-alpha))))))))
 
 (defun !combine-float-vectors (vec1 vec2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
   "DEPRECATED: use !combine-float-arrays

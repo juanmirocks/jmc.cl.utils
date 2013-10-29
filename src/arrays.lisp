@@ -7,29 +7,21 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defmacro arefl (array is)
+  "Access array by a list of indeces"
+  `(apply #'aref (cons ,array ,is)))
 
-;;;;
-;;;; These utilities must be reviewed and generalized
-;;;;
+(defun (setf arefl) (value array is)
+  (setf (arefl array is) value)) ;TODO somehow create setf function for arefl
 
-(defmacro make-typed-array (dimensions type initial-element)
-  "Make a typed array, specifying the dimensions, type and initial-element"
-  `(make-array ,dimensions :element-type ,type :initial-element (coerce ,initial-element ,type)))
-
-(defun transpose (array)
-  "Transpose the array"
-  (declare (optimize (speed 3) (safety 0)))
-  (let ((out (make-array (array-dimensions array) :element-type (array-element-type array))))
-    (dotimes (i (the fixnum (array-dimension array 0)) out)
-      (dotimes (j (the fixnum (array-dimension array 1)))
-        (setf (aref out i j) (aref array j i))))))
-
-(defun arefl (array is)
-  "Access array by a list of indexes"
-  (apply #'aref (cons array is)))
+(defun array-powers (x)
+  (let ((dim (if (listp x) x (array-dimensions x))))
+    (labels ((rec (l acc)
+               (if (null l) (reverse acc) (rec (cdr l) (cons (reduce #'* (cdr l)) acc)))))
+      (rec dim nil))))
 
 (defun refa (pos powers)
-  "Reference array by absolute position. Return list of indexes"
+  "Return list of indeces that correspond to absolut position 'pos' of implicit array (referenced by powers)"
   (labels ((rec (l pos acc)
              (cond
                ((null l) (reverse acc))
@@ -39,15 +31,9 @@
                     (rec (cdr l) remainder (cons quotient acc)))))))
     (rec powers pos nil)))
 
-(defun arefa (array pos &optional (powers (array-powers array)))
+(defmacro arefa (array pos &optional (powers (array-powers array)))
   "Access array by absolute position"
-  (arefl array (refa pos powers)))
-
-(defun array-powers (x)
-  (let ((dim (if (listp x) x (array-dimensions x))))
-    (labels ((rec (l acc)
-               (if (null l) (reverse acc) (rec (cdr l) (cons (reduce #'* (cdr l)) acc)))))
-      (rec dim nil))))
+  `(arefl ,array (refa ,pos ,powers)))
 
 (defun areduce (fun array)
   "Array reduce"
@@ -58,33 +44,25 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; TESTING, not exported
-;;
-;; The ideal is to be able to reference all arrays with the long indexes
-(defun initialize-array (name dimensions initial-element)
-  "Aux function to generate for other macros to generated a nested setfer of the elements of the array"
-  (let ((vars nil)
-        (gen)
-        (gens))
-    (dolist (z dimensions)
-      (push (setq gen (gensym)) vars)
-      (push z vars)
-      (push gen gens))
-    (setf vars (nreverse vars))
-    (setf gens (nreverse gens))
-    `(dotimes-nested (,vars ,name)
-       (setf (aref ,name ,@gens) ,initial-element))))
+(defmacro make-typed-array (dimensions type initial-element)
+  "Make a typed array, specifying the dimensions, type and initial-element"
+  `(make-array ,dimensions :element-type ,type :initial-element (coerce ,initial-element ,type)))
 
-(defmacro make-random-array (dimensions range &optional (element-type 'single-float))
-  (let ((gzero (gensym))
-        (grange (gensym))
-        (gout (gensym)))
-    `(let* ((,gzero (coerce 0 ',element-type))
-            (,grange (coerce ,range ',element-type))
-            (,gout (make-typed-array (list ,@dimensions) ',element-type ,gzero)))
-       ,(initialize-array gout dimensions `(random ,grange)))))
+(defun transpose (matrix)
+  "Transpose the matrix"
+  (declare (optimize (speed 3) (safety 0)))
+  (let ((out (make-array (array-dimensions matrix) :element-type (array-element-type matrix))))
+    (dotimes (i (the fixnum (array-dimension matrix 0)) out)
+      (dotimes (j (the fixnum (array-dimension matrix 1)))
+        (setf (aref out i j) (aref matrix j i))))))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun make-random-vector (dimension range &optional (element-type 'single-float))
+  "Generates a numerical vector of type element-type with random values. The range is between 0 and range"
+  (let* ((zero (coerce 0 element-type))
+         (range (coerce range element-type))
+         (out (make-array dimension :element-type element-type :initial-element zero)))
+    (dotimes (i dimension out)
+      (setf (aref out i) (random range)))))
 
 (defun make-random-matrix (dimensions range &optional (element-type 'single-float))
   "Generates a numerical matrix of type element-type with random values. The range is between 0 and range"
@@ -96,14 +74,6 @@
     (dotimes (i dim1 out)
       (dotimes (j dim2 out)
         (setf (aref out i j) (random range))))))
-
-(defun make-random-vector (dimension range &optional (element-type 'single-float))
-  "Generates a numerical vector of type element-type with random values. The range is between 0 and range"
-  (let* ((zero (coerce 0 element-type))
-         (range (coerce range element-type))
-         (out (make-array dimension :element-type element-type :initial-element zero)))
-    (dotimes (i dimension out)
-      (setf (aref out i) (random range)))))
 
 (defun !combine-float-matrices (matrix1 matrix2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
   "Combine 2 float matrices whose values range from 0 to 1. Alpha is the level of confidence in matrix1, ie, the element of a resultant value will be value = matrix1_value * alpha + matrix2_value * (- 1 alpha). Destructive function **"
@@ -210,9 +180,8 @@
         (make-array (array-dimensions array) :element-type (array-element-type array) :initial-element 0)
         (dotimes (i (array-total-size array) array)
           (let ((ref (refa i powers)))
-            (setf (apply #'aref (cons array ref)) ;TODO somehow create setf function for arefle
-                  (/ (apply #'aref (cons array ref)) zustandssumme)))))))
-
+            (setf (arefl array ref)
+                  (/ (arefl array ref) zustandssumme)))))))
 
 (defmacro accum-array (array no-dimensions element-type)
   "Give the accumulative float array of any dimension"

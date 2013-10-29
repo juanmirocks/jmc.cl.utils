@@ -55,8 +55,16 @@
       (dotimes (j (the fixnum (array-dimension matrix 1)))
         (setf (aref out i j) (aref matrix j i))))))
 
+(defun make-random-array (dimensions range)
+  "Create a numerical array with random values from [0, range)"
+  (let* ((numeric-type (type-of range))
+        (ret (make-array dimensions :element-type numeric-type)))
+    (dotimes (i (array-total-size ret) ret)
+      (setf (arefa ret i) (random range)))))
+
 (defun make-random-vector (dimension range &optional (element-type 'single-float))
-  "Generates a numerical vector of type element-type with random values. The range is between 0 and range"
+  "DEPRECATED: use make-random-array
+Generates a numerical vector of type element-type with random values. The range is between 0 and range"
   (let* ((zero (coerce 0 element-type))
          (range (coerce range element-type))
          (out (make-array dimension :element-type element-type :initial-element zero)))
@@ -64,7 +72,8 @@
       (setf (aref out i) (random range)))))
 
 (defun make-random-matrix (dimensions range &optional (element-type 'single-float))
-  "Generates a numerical matrix of type element-type with random values. The range is between 0 and range"
+  "DEPRECATED: use make-random-array
+Generates a numerical matrix of type element-type with random values. The range is between 0 and range"
   (let* ((zero (coerce 0 element-type))
          (range (coerce range element-type))
          (out (make-array dimensions :element-type element-type :initial-element zero))

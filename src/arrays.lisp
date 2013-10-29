@@ -174,14 +174,11 @@
                       (/ (aref matrix i j z) zustandssumme)))))))))
 
 (defun !normalize-array (array)
-  (let ((zustandssumme (areduce #'+ array))
-        (powers (array-powers array)))
+  (let ((zustandssumme (areduce #'+ array)))
     (if (zerop zustandssumme)
-        (make-array (array-dimensions array) :element-type (array-element-type array) :initial-element 0)
+        array
         (dotimes (i (array-total-size array) array)
-          (let ((ref (refa i powers)))
-            (setf (arefl array ref)
-                  (/ (arefl array ref) zustandssumme)))))))
+          (setf (arefa array i) (/ (arefa array i) zustandssumme))))))
 
 (defmacro accum-array (array no-dimensions element-type)
   "Give the accumulative float array of any dimension"

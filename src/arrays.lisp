@@ -31,16 +31,15 @@
                     (rec (cdr l) remainder (cons quotient acc)))))))
     (rec powers pos nil)))
 
-(defmacro arefa (array pos &optional (powers (array-powers array)))
-  "Access array by absolute position"
-  `(arefl ,array (refa ,pos ,powers)))
+(defmacro arefa (array index)
+  "Access array by absolute index. Synonym of `row-major-aref`"
+  `(row-major-aref ,array ,index))
 
 (defun areduce (fun array)
   "Array reduce"
-  (let ((powers (array-powers array))
-        (acc (reduce fun nil)))
+  (let ((acc (reduce fun nil)))
     (dotimes (i (array-total-size array) acc)
-      (setf acc (funcall fun acc (arefa array i powers))))))
+      (setf acc (funcall fun acc (arefa array i))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

@@ -43,6 +43,7 @@
 
    ;;;arrays
    :make-typed-array
+   :array-reset
    :transpose
    :make-random-array
    :make-random-matrix

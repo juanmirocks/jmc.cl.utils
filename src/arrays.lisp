@@ -102,7 +102,8 @@ Note: the parameters are not checked"
                                   (+ (* (arefa a1 i) alpha) (* (arefa a2 i) 1-alpha)))))))))
 
 (defun !combine-float-vectors (vec1 vec2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
-  "Combine 2 float vectors whose values range from 0 to 1. Alpha is the level of confidence in vec1, ie, the element of a resultant value will be value = vec1_value * alpha + vec2_value * (- 1 alpha). Destructive function **"
+  "DEPRECATED: use !combine-float-arrays
+Combine 2 float vectors whose values range from 0 to 1. Alpha is the level of confidence in vec1, ie, the element of a resultant value will be value = vec1_value * alpha + vec2_value * (- 1 alpha). Destructive function **"
   (let* ((size (min (length vec1) (length vec2)))
          (alpha (coerce alpha element-type))
          (beta (coerce (- 1 alpha) element-type)))
@@ -112,7 +113,8 @@ Note: the parameters are not checked"
                               (+ (* (aref vec1 i) alpha) (* (aref vec2 i) beta)))))))
 
 (defun !combine-float-matrices (matrix1 matrix2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
-  "Combine 2 float matrices whose values range from 0 to 1. Alpha is the level of confidence in matrix1, ie, the element of a resultant value will be value = matrix1_value * alpha + matrix2_value * (- 1 alpha). Destructive function **"
+  "DEPRECATED: use !combine-float-arrays
+Combine 2 float matrices whose values range from 0 to 1. Alpha is the level of confidence in matrix1, ie, the element of a resultant value will be value = matrix1_value * alpha + matrix2_value * (- 1 alpha). Destructive function **"
   (let* ((dim1 (array-dimension matrix1 0))
          (dim2 (array-dimension matrix1 1))
          (alpha (coerce alpha element-type))

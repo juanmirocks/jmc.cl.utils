@@ -44,8 +44,10 @@
    ;;;arrays
    :make-typed-array
    :transpose
+   :make-random-array
    :make-random-matrix
    :make-random-vector
+   :!combine-float-arrays
    :!combine-float-matrices
    :!combine-float-vectors
    :vector=

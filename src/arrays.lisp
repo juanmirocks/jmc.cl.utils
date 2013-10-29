@@ -83,6 +83,33 @@ Generates a numerical matrix of type element-type with random values. The range 
       (dotimes (j dim2 out)
         (setf (aref out i j) (random range))))))
 
+(defun !combine-float-arrays (a1 a2 alpha &optional (let-zero-be-zero nil))
+  "**Destructive** Combine float arrays as in `a1 = a1 * alpha + a2 * (1 - alpha)`
+@param a1:
+@param a2:
+@param alpha: float in [0, 1]
+
+Note: the parameters are not checked"
+  (if (= 1 alpha)
+      a1
+      (let* ((type (array-element-type a1))
+             (alpha (coerce alpha type))
+             (1-alpha (coerce (- 1 alpha) type)))
+        (dotimes (i (array-total-size a1) a1)
+      (setf (arefa a1 i) (if (and let-zero-be-zero (zerop (arefa a1 i)))
+                             (arefa a1 i)
+                             (+ (* (arefa a1 i) alpha) (* (arefa a2 i) 1-alpha))))))))
+
+(defun !combine-float-vectors (vec1 vec2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
+  "Combine 2 float vectors whose values range from 0 to 1. Alpha is the level of confidence in vec1, ie, the element of a resultant value will be value = vec1_value * alpha + vec2_value * (- 1 alpha). Destructive function **"
+  (let* ((size (min (length vec1) (length vec2)))
+         (alpha (coerce alpha element-type))
+         (beta (coerce (- 1 alpha) element-type)))
+    (dotimes (i size vec1)
+      (setf (aref vec1 i) (if (and let-zero-be-zero (zerop (aref vec1 i)))
+                              (aref vec1 i)
+                              (+ (* (aref vec1 i) alpha) (* (aref vec2 i) beta)))))))
+
 (defun !combine-float-matrices (matrix1 matrix2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
   "Combine 2 float matrices whose values range from 0 to 1. Alpha is the level of confidence in matrix1, ie, the element of a resultant value will be value = matrix1_value * alpha + matrix2_value * (- 1 alpha). Destructive function **"
   (let* ((dim1 (array-dimension matrix1 0))
@@ -94,16 +121,6 @@ Generates a numerical matrix of type element-type with random values. The range 
         (setf (aref matrix1 i j) (if (and let-zero-be-zero (zerop (aref matrix1 i j)))
                                     (aref matrix1 i j)
                                     (+ (* (aref matrix1 i j) alpha) (* (aref matrix2 i j) beta))))))))
-
-(defun !combine-float-vectors (vec1 vec2 alpha &optional (element-type 'single-float) (let-zero-be-zero nil))
-  "Combine 2 float vectors whose values range from 0 to 1. Alpha is the level of confidence in vec1, ie, the element of a resultant value will be value = vec1_value * alpha + vec2_value * (- 1 alpha). Destructive function **"
-  (let* ((size (min (length vec1) (length vec2)))
-         (alpha (coerce alpha element-type))
-         (beta (coerce (- 1 alpha) element-type)))
-    (dotimes (i size vec1)
-      (setf (aref vec1 i) (if (and let-zero-be-zero (zerop (aref vec1 i)))
-                              (aref vec1 i)
-                              (+ (* (aref vec1 i) alpha) (* (aref vec2 i) beta)))))))
 
 (defun vector= (vec1 vec2 &key (test #'eql))
   "Compare 2 vectors with test function"

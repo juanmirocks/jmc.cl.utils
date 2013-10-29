@@ -55,10 +55,10 @@
       (dotimes (j (the fixnum (array-dimension matrix 1)))
         (setf (aref out i j) (aref matrix j i))))))
 
-(defun make-random-array (dimensions range)
+(defun make-random-array (dimensions &optional (range 1.0))
   "Create a numerical array with random values from [0, range)"
   (let* ((numeric-type (type-of range))
-        (ret (make-array dimensions :element-type numeric-type)))
+         (ret (make-array dimensions :element-type numeric-type)))
     (dotimes (i (array-total-size ret) ret)
       (setf (arefa ret i) (random range)))))
 

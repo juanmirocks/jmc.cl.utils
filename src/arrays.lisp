@@ -47,6 +47,10 @@
   "Make a typed array, specifying the dimensions, type and initial-element"
   `(make-array ,dimensions :element-type ,type :initial-element (coerce ,initial-element ,type)))
 
+(defun array-reset (array &optional (value (coerce 0 (array-element-type array))))
+  (dotimes (i (array-total-size array) array)
+    (setf (arefa array i) value)))
+
 (defun transpose (matrix)
   "Transpose the matrix"
   (declare (optimize (speed 3) (safety 0)))

@@ -51,6 +51,10 @@
   (dotimes (i (array-total-size array) array)
     (setf (arefa array i) value)))
 
+(defun array-set (a1 a2)
+  (dotimes (i (array-total-size a1) a1)
+    (setf (arefa a1 i) (arefa a2 i))))
+
 (defun transpose (matrix)
   "Transpose the matrix"
   (declare (optimize (speed 3) (safety 0)))

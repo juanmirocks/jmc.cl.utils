@@ -44,6 +44,7 @@
    ;;;arrays
    :make-typed-array
    :array-reset
+   :array-set
    :transpose
    :make-random-array
    :make-random-matrix

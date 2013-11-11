@@ -1,7 +1,5 @@
 ;; Author: Juan Miguel Cejuela
 ;; Created: Sat Jul 12 19:47:10 2008 (CEST)
-;; Last-Updated: 2011-08-11
-;;     Update #: 11
 
 (defpackage :net.ashrentum.utils.jmcejuela
   (:use :cl)
@@ -37,6 +35,7 @@
    :make-list-meval
    :similarity
    :matrix->list
+   :array->list
    :list->sequence
    :sequence->list
    :range
@@ -62,6 +61,7 @@
    :accum-array
    :copy-matrix
    :copy-array
+   :areduce
 
    ;;;strings
    :string-to-number

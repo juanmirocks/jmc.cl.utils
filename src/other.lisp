@@ -56,7 +56,7 @@
   (declare (fixnum start end) ((simple-array) vec))
   "Search the obj in the vector comparing with the func function"
   (loop for i of-type fixnum from start to (1- end) do
-       (when (funcall func= (row-major-aref vec i) obj) ;can be used with matrixes
+       (when (funcall func= (row-major-aref vec i) obj) ;can be used with matrices
          (return-from lin-search i)))
   nil)
 
@@ -109,5 +109,3 @@ a position of the awards given"
         ((null e) hash)
       (declare (fixnum i))
       (setf (gethash e hash) i))))
-
-

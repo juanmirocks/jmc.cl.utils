@@ -1,7 +1,5 @@
 ;; Author: Juan Miguel Cejuela
 ;; Created: Sat Jul 12 19:47:10 2008 (CEST)
-;; Last-Updated: 2011-08-11
-;;     Update #: 11
 
 (defpackage :net.ashrentum.utils.jmcejuela
   (:use :cl)
@@ -37,23 +35,33 @@
    :make-list-meval
    :similarity
    :matrix->list
+   :array->list
    :list->sequence
    :sequence->list
+   :range
 
    ;;;arrays
    :make-typed-array
+   :array-reset
+   :array-set
    :transpose
+   :make-random-array
    :make-random-matrix
    :make-random-vector
+   :!combine-float-arrays
    :!combine-float-matrices
    :!combine-float-vectors
    :vector=
    :matrix=
    :vector-from-matrix
    :!normalize-vector
-   :!normalize-matrix
+   :!normalize-2dmatrix-by-row
+   :!normalize-3dmatrix-by-row
+   :!normalize-array
    :accum-array
    :copy-matrix
+   :copy-array
+   :areduce
 
    ;;;strings
    :string-to-number
@@ -69,4 +77,3 @@
    :date
    :lisparray->pythonarray
    :make-hash-table-with-list))
-

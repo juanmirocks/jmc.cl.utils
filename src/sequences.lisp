@@ -52,6 +52,14 @@
       (when (funcall test (aref seq1 i) (aref seq2 i))
         (incf score)))))
 
+(defun list->sequence (list sequence-type)
+  "Convert the list into a sequence"
+  (concatenate sequence-type list))
+
+(defun sequence->list (sequence)
+  "Convert the sequence into a list"
+  (concatenate 'list sequence))
+
 (defun matrix->list (matrix)
   "Convert the matrix into a list, tree"
   (declare ((simple-array) matrix))
@@ -63,13 +71,18 @@
            (push (aref matrix i j) sublist)))
        list))))
 
-(defun list->sequence (list sequence-type)
-  "Convert the list into a sequence"
-  (concatenate sequence-type list))
-
-(defun sequence->list (sequence)
-  "Convert the sequence into a list"
-  (concatenate 'list sequence))
+(defun array->list (array)
+  "Convert array of any dimension to a list"
+  (let* ((dimensions (array-dimensions array))
+         (depth      (1- (length dimensions)))
+         (indices    (make-list (1+ depth) :initial-element 0)))
+    (labels ((recurse (n)
+               (loop for j below (nth n dimensions)
+                  do (setf (nth n indices) j)
+                  collect (if (= n depth)
+                              (apply #'aref array indices)
+                              (recurse (1+ n))))))
+      (recurse 0))))
 
 (defun range (max &key (min 0) (step 1))
   (loop for n from min below max by step

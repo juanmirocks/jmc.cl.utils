@@ -42,6 +42,7 @@
 
    ;;;arrays
    :make-typed-array
+   :make-svector
    :array-reset
    :array-set
    :transpose

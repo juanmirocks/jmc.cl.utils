@@ -47,6 +47,10 @@
   "Make a typed array, specifying the dimensions, type and initial-element"
   `(make-array ,dimensions :element-type ,type :initial-element (coerce ,initial-element ,type)))
 
+(defmacro make-svector (dimensions)
+  "Make simple vector"
+  `(make-array ,dimensions :fill-pointer nil))
+
 (defun array-reset (array &optional (value (coerce 0 (array-element-type array))))
   (dotimes (i (array-total-size array) array)
     (setf (arefa array i) value)))

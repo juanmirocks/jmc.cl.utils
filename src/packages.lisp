@@ -52,6 +52,7 @@
    :!combine-float-arrays
    :!combine-float-matrices
    :!combine-float-vectors
+   :array-eq
    :vector=
    :matrix=
    :vector-from-matrix

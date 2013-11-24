@@ -136,8 +136,17 @@ Combine 2 float matrices whose values range from 0 to 1. Alpha is the level of c
                                     (aref matrix1 i j)
                                     (+ (* (aref matrix1 i j) alpha) (* (aref matrix2 i j) beta))))))))
 
+(defun array-eq (a1 a2 &optional (test #'eql))
+  "Array equality.
+Two arrays are equal if their dimensions are equal and all their elements are equal wrt the given test function"
+  (and (equal (array-dimensions a1) (array-dimensions a2))
+       (dotimes (i (array-total-size a1) t)
+         (unless (funcall test (row-major-aref a1 i) (row-major-aref a2 i))
+           (return (values nil (format nil "Different at absolute position ~d, ~a != ~a" i (row-major-aref a1 i) (row-major-aref a2 i))))))))
+
 (defun vector= (vec1 vec2 &key (test #'eql))
-  "Compare 2 vectors with test function"
+  "DEPRECATED: use array-eq
+Compare 2 vectors with test function"
   (declare (vector vec1 vec2))
   (let ((size1 (length vec1))
         (size2 (length vec2)))
@@ -148,7 +157,8 @@ Combine 2 float matrices whose values range from 0 to 1. Alpha is the level of c
           (return nil))))))
 
 (defun matrix= (matrix1 matrix2 &key (test #'eql))
-  "Compare 2 matrices with test function"
+  "DEPRECATED: use array-eq
+Compare 2 matrices with test function"
   (declare ((simple-array) matrix1 matrix2))
   (let ((dim11 (array-dimension matrix1 0))
         (dim12 (array-dimension matrix1 1))
